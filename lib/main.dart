@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shop_app_udemy/screens/cart_screen.dart';
+import './screens/cart_screen.dart';
 import './providers/cart.dart';
 import './screens/product_detail_screen.dart';
 import './providers/products.dart';
@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(
-          primaryColor: Colors.blue,
+          primaryColor: Colors.purple,
           accentColor: Colors.orange,
           fontFamily: "Lato",
         ),
