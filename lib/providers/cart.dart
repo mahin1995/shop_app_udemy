@@ -65,4 +65,7 @@ double?  get totalAmount {
     }
     notifyListeners();
   }
+  void removeItem(String productId){
+    
+  }
 }
