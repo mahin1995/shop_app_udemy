@@ -66,6 +66,13 @@ double?  get totalAmount {
     notifyListeners();
   }
   void removeItem(String productId){
-    
+    print(productId);
+   
+    _items.remove(productId);
+    notifyListeners();
+  }
+    void clear(){
+    _items={};
+    notifyListeners();
   }
 }
