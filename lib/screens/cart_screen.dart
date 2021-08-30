@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/cart.dart' show Cart;
+import '../providers/ordars.dart';
 import '../widgets/cart_item.dart';
 
 class CartScreen extends StatelessWidget {
@@ -36,28 +37,31 @@ class CartScreen extends StatelessWidget {
                     backgroundColor: Theme.of(context).primaryColor,
                   ),
                   FlatButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      Provider.of<Orders>(context, listen: false).addOrder(
+                          cart.items.values.toList(), cart.totalAmount);
+                          cart.clear();
+                    },
                     child: Text("Order Now"),
                     textColor: Theme.of(context).primaryColor,
                   ),
-                  
                 ],
               ),
             ),
           ),
-        SizedBox(),
-        Expanded(
-                    child: ListView.builder(
-                      itemBuilder: (ctx, i) => CartItems(
-                        cart.items.values.toList()[i].id,
-                        cart.items.keys.toList()[i],
-                         cart.items.values.toList()[i].price,
-                         cart.items.values.toList()[i].quantity,
-                        cart.items.values.toList()[i].title,
-                      ),
-                      itemCount: cart.items.length,
-                    ),
-                  )
+          SizedBox(),
+          Expanded(
+            child: ListView.builder(
+              itemBuilder: (ctx, i) => CartItems(
+                cart.items.values.toList()[i].id,
+                cart.items.keys.toList()[i],
+                cart.items.values.toList()[i].price,
+                cart.items.values.toList()[i].quantity,
+                cart.items.values.toList()[i].title,
+              ),
+              itemCount: cart.items.length,
+            ),
+          )
         ],
       ),
     );
