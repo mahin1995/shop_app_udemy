@@ -34,7 +34,9 @@ class ProductItem extends StatelessWidget {
           leading: Consumer<Product_m>(
               builder: (ctx, product, child) => IconButton(
                     icon: Icon(
-                      product.isFavorite ? Icons.favorite : Icons.favorite_border,
+                      product.isFavorite
+                          ? Icons.favorite
+                          : Icons.favorite_border,
                     ),
                     color: Theme.of(context).accentColor,
                     onPressed: () {
@@ -47,6 +49,27 @@ class ProductItem extends StatelessWidget {
               ),
               onPressed: () {
                 cart.addItem(product.id, product.price, product.title);
+
+                /// ScaffoldMessenger.of(context).hideCurrentSnackBar()
+                /// ScaffoldMessenger.of(context).showSnackbar(...)
+
+                Scaffold.of(context).hideCurrentSnackBar();
+
+                /// Scaffold.of(context).openDrawer();
+                Scaffold.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      "Added Item to chart!!",
+                    ),
+                    duration: Duration(seconds: 2),
+                    action: SnackBarAction(
+                      label: 'Undo',
+                      onPressed: () {
+                        cart.removeSingleItem(product.id);
+                      },
+                    ),
+                  ),
+                );
               },
               color: Theme.of(context).accentColor),
         ),
