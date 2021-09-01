@@ -10,8 +10,7 @@ class ProductDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final productId = ModalRoute.of(context)!.settings.arguments as String;
-    final loadedProducts =
-        Provider.of<Products>(context, listen: false).findById(productId);
+    final loadedProducts = Provider.of<Products>(context, listen: false).findById(productId);
 
     return Scaffold(
       appBar: AppBar(
@@ -36,8 +35,14 @@ class ProductDetailScreen extends StatelessWidget {
               '\$${loadedProducts.price}',
               style: TextStyle(color: Colors.grey, fontSize: 20),
             ),
-            SizedBox(height: 10,),
-            Text(loadedProducts.description,textAlign: TextAlign.center,softWrap: true,)
+            SizedBox(
+              height: 10,
+            ),
+            Text(
+              loadedProducts.description,
+              textAlign: TextAlign.center,
+              softWrap: true,
+            )
           ],
         ),
       ),
