@@ -5,14 +5,22 @@ class UserProductItem extends StatelessWidget {
   final String title;
   final String imageUrl;
 
-  UserProductItem(this.imageUrl, this.title);
+  UserProductItem(
+    this.title,
+    this.imageUrl,
+  );
   @override
   Widget build(BuildContext context) {
     return ListTile(
       title: Text(title),
       leading: CircleAvatar(
-        child: Image.network(imageUrl),
-        /// backgroundImage: NetworkImage("$imageUrl"),
+        // child: Image.network(
+        //   imageUrl,
+        //   width: 50,
+        //   height: 50,
+        //   fit: BoxFit.cover,
+        // ),
+        backgroundImage: NetworkImage("$imageUrl"),
       ),
       trailing: Container(
         width: 100,
