@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/material.dart';
 import './product.dart';
 
@@ -78,4 +76,19 @@ class Products with ChangeNotifier {
   //   _showFavoritesOnly = false;
   //   notifyListeners();
   // }
+
+  void updateProduct(String id, Product_m newProduct) {
+    final prodIndex = _item.indexWhere((prod) => prod.id == id);
+    if (prodIndex >= 0) {
+      _item[prodIndex] = newProduct;
+      notifyListeners();
+    } else {
+      print('no id');
+    }
+  }
+
+  void deleteProduct(String id) {
+    _item.removeWhere((prod) => prod.id == id);
+    notifyListeners();
+  }
 }
