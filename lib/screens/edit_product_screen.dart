@@ -39,7 +39,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
     if (_isInit) {
       final modulroute = ModalRoute.of(context);
       final productId = modulroute != null ? modulroute.settings.arguments : '';
-      print(productId);
       if (productId != null) {
         final product = Provider.of<Products>(context, listen: false).findById(productId.toString());
         _editedProduct = product;
@@ -80,6 +79,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   void _saveForm() {
     final isValid = _form.currentState!.validate();
     if (!isValid) {
+      print("not valid");
       return;
     }
     _form.currentState!.save();

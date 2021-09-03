@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+/// import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import './product.dart';
 
@@ -64,6 +64,7 @@ class Products with ChangeNotifier {
     ///   'imageUrl':product.imageUrl
 
     /// }));
+    print(product);
     final newProduct = Product_m(
         title: product.title,
         price: product.price,
