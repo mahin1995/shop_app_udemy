@@ -15,7 +15,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   final _priceFocuseNode = FocusNode();
   final _descriptionFocusNode = FocusNode();
   final _imageUrlFocusNode = FocusNode();
-  TextEditingController _imageUrlController = new TextEditingController();
+  var _imageUrlController = new TextEditingController();
   final _form = GlobalKey<FormState>();
   var _editedProduct = Product_m(id: '', title: '', price: 0, description: '', imageUrl: '');
   var _isInit = false;
@@ -38,7 +38,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
     // TODO: implement didChangeDependencies
     if (_isInit) {
       final modulroute = ModalRoute.of(context);
-      final productId = modulroute != null ? modulroute.settings.arguments : '';
+      /// final productId = modulroute != null ? modulroute.settings.arguments : '';
+      final productId =modulroute!.settings.arguments;
       print(productId);
       if (productId != null) {
         final product = Provider.of<Products>(context, listen: false).findById(productId.toString());
@@ -53,7 +54,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
       }
     }
     _isInit = false;
-    print(_initValues);
+    print('initial value $_initValues');
     super.didChangeDependencies();
   }
 
@@ -79,14 +80,16 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
   void _saveForm() {
     final isValid = _form.currentState!.validate();
-    if (!isValid) {
-      return;
-    }
+     if (!isValid) {
+       print("form is invalid");
+       return;
+     }
     _form.currentState!.save();
     if (_editedProduct.id != null) {
-      Provider.of<Products>(context, listen: false).updateProduct(_editedProduct.id, _editedProduct);
-    } else {
     Provider.of<Products>(context, listen: false).addProduct(_editedProduct);
+    } else {
+      print('$_editedProduct');
+      Provider.of<Products>(context, listen: false).updateProduct(_editedProduct.id, _editedProduct);
     }
     // print(_editedProduct.title);
     // print(_editedProduct.price);
