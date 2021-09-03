@@ -1,3 +1,5 @@
+
+
 import 'package:flutter/material.dart';
 import './product.dart';
 
@@ -43,8 +45,7 @@ class Products with ChangeNotifier {
     return [..._item];
   }
 
-
-List<Product_m> get favoriteItems {
+  List<Product_m> get favoriteItems {
     return _item.where((prodItem) => prodItem.isFavorite).toList();
   }
 
@@ -54,17 +55,20 @@ List<Product_m> get favoriteItems {
     );
   }
 
-  void addProduct() {
-    /// _item.add(value);
+  void addProduct(Product_m product) {
+    final newProduct = Product_m(
+        title: product.title,
+        price: product.price,
+        imageUrl: product.imageUrl,
+        id: DateTime.now().toString(),
+        description: product.description);
+
+    _item.add(newProduct);
+    // _item.insert(0, newProduct);///to add to first of list
+
     notifyListeners();
   }
 
-
-
-
-
-
-  
   // void showFavoritesOnly() {
   //   _showFavoritesOnly = true;
   //   notifyListeners();
