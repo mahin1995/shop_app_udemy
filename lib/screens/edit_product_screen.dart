@@ -18,18 +18,19 @@ class _EditProductScreenState extends State<EditProductScreen> {
   TextEditingController _imageUrlController = new TextEditingController();
   final _form = GlobalKey<FormState>();
   var _editedProduct = Product_m(id: '', title: '', price: 0, description: '', imageUrl: '');
-  var _isInit = false;
+  var _isInit = true;
   var _initValues = {
     'title': '',
     'description': '',
     'price': '',
     'imageUrl': '',
   };
+  var _isLoading=false;
   @override
   void initState() {
     _imageUrlFocusNode.addListener(_updateImageUrl);
     // TODO: implement initState
-    _isInit = true;
+    
     super.initState();
   }
 
@@ -76,34 +77,47 @@ class _EditProductScreenState extends State<EditProductScreen> {
     super.dispose();
   }
 
-  void _saveForm() {
+   void _saveForm()  {
     final isValid = _form.currentState!.validate();
     if (!isValid) {
-      print("not valid");
       return;
     }
     _form.currentState!.save();
-    if (_editedProduct.id != null) {
-      Provider.of<Products>(context, listen: false).updateProduct(_editedProduct.id, _editedProduct);
+    setState(() {
+      _isLoading = true;
+    });
+    if (_editedProduct.id == null) {
+      Provider.of<Products>(context, listen: false)
+          .updateProduct(_editedProduct.id, _editedProduct);
+      setState(() {
+        _isLoading = false;
+      });
+      Navigator.of(context).pop();
     } else {
-    Provider.of<Products>(context, listen: false).addProduct(_editedProduct);
+      Provider.of<Products>(context, listen: false)
+          .addProduct(_editedProduct)
+          .then((_) {
+            
+        setState(() {
+          _isLoading = false;
+        Navigator.of(context).pop();
+        });
+      });
+        
     }
-    // print(_editedProduct.title);
-    // print(_editedProduct.price);
-    // print(_editedProduct.description);
-    // print(_editedProduct.id);
-    // print(_editedProduct.imageUrl);
-    Navigator.of(context).pop();
+    // Navigator.of(context).pop();
   }
-
   @override
   Widget build(BuildContext context) {
+    print(_isLoading);
     return Scaffold(
       appBar: AppBar(
         title: Text('Edit Product'),
         actions: [IconButton(onPressed: _saveForm, icon: Icon(Icons.save))],
       ),
-      body: Padding(
+      body:_isLoading ? Center(
+        child: CircularProgressIndicator(),
+      ) :Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _form,
