@@ -98,7 +98,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
  await Provider.of<Products>(context, listen: false)
           .addProduct(_editedProduct);
       }catch(error){
-     return showDialog(context: context, builder: (ctx){
+     await showDialog(context: context, builder: (ctx){
               return AlertDialog(title: Text("An Error is ocuring"),
               /// content: Text(error.toString()),);
               content: Text("Something bad happen"),

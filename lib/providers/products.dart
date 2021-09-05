@@ -79,6 +79,7 @@ class Products with ChangeNotifier {
     _item.add(newProduct);
     notifyListeners();
  }catch(error){
+   print(error.toString());
    throw error;
  }   // _item.insert(0, newProduct);///to add to first of list
   }
