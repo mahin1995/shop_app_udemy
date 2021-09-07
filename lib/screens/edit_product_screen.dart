@@ -47,9 +47,10 @@ class _EditProductScreenState extends State<EditProductScreen> {
           'title': _editedProduct.title,
           'description': _editedProduct.description,
           'price': _editedProduct.price.toString(),
-          'imageUrl': ''
+          /// 'imageUrl': _editedProduct.imageUrl
+          /// 'imageUrl': ''
         };
-        // _imageUrlController = _editedProduct.imageUrl;
+        _imageUrlController.text = _editedProduct.imageUrl;
       }
     }
     _isInit = false;
@@ -87,12 +88,9 @@ class _EditProductScreenState extends State<EditProductScreen> {
       _isLoading = true;
     });
     if (_editedProduct.id == null) {
-      Provider.of<Products>(context, listen: false)
+    await  Provider.of<Products>(context, listen: false)
           .updateProduct(_editedProduct.id, _editedProduct);
-      setState(() {
-        _isLoading = false;
-      });
-      Navigator.of(context).pop();
+
     } else {
       try{
  await Provider.of<Products>(context, listen: false)
@@ -108,17 +106,20 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   },)
                 ],);
             });
-      }finally{
-        setState(() {
-          _isLoading = false;
-        });
-        Navigator.of(context).pop();
       }
+      /// finally{
+      ///   setState(() {
+      ///     _isLoading = false;
+      ///   });
+      ///   Navigator.of(context).pop();
     
-     
-        
     }
-    // Navigator.of(context).pop();
+          /// }
+          setState(() {
+        _isLoading = false;
+      });
+      Navigator.of(context).pop();
+
   }
   @override
   Widget build(BuildContext context) {
@@ -242,6 +243,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   Expanded(
                     child: TextFormField(
                       decoration: InputDecoration(labelText: 'Image URL'),
+                      /// initialValue: _imageUrl,
                       keyboardType: TextInputType.url,
                       textInputAction: TextInputAction.done,
                       controller: _imageUrlController,
@@ -250,10 +252,11 @@ class _EditProductScreenState extends State<EditProductScreen> {
                         _saveForm();
                       },
                       onSaved: (value) {
+
                         _editedProduct = Product_m(
                             title: _editedProduct.title,
                             price: _editedProduct.price,
-                            imageUrl: '$value',
+                            imageUrl: value ?? _editedProduct.imageUrl,
                             id: _editedProduct.id,
                             description: _editedProduct.description,
                             isFavorite: _editedProduct.isFavorite);
