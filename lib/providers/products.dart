@@ -69,7 +69,7 @@ class Products with ChangeNotifier {
           title: prodData['title'],
           description: prodData['description'],
           price: prodData['price'],
-          isFavorite: true,
+          isFavorite: prodData['isFavorite'],
           imageUrl: prodData['imageUrl'],
         ));
       });
@@ -89,7 +89,9 @@ class Products with ChangeNotifier {
             'title': product.title,
             'description': product.description,
             'price': product.price,
-            'imageUrl': product.imageUrl
+            'imageUrl': product.imageUrl,
+            'isFavorite':product.isFavorite
+
           }));
       print(jsonDecode(response.body));
       final newProduct = Product_m(
