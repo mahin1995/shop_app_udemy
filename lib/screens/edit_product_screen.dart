@@ -15,15 +15,47 @@ class _EditProductScreenState extends State<EditProductScreen> {
   final _priceFocuseNode = FocusNode();
   final _descriptionFocusNode = FocusNode();
   final _imageUrlFocusNode = FocusNode();
-  final _imageUrlController = TextEditingController();
+  TextEditingController _imageUrlController = new TextEditingController();
   final _form = GlobalKey<FormState>();
   var _editedProduct = Product_m(id: '', title: '', price: 0, description: '', imageUrl: '');
-
+  var _isInit = true;
+  var _initValues = {
+    'title': '',
+    'description': '',
+    'price': '',
+    'imageUrl': '',
+  };
+  var _isLoading=false;
   @override
   void initState() {
     _imageUrlFocusNode.addListener(_updateImageUrl);
     // TODO: implement initState
+    
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
+    if (_isInit) {
+      final modulroute = ModalRoute.of(context);
+      final productId = modulroute != null ? modulroute.settings.arguments : '';
+      if (productId != null) {
+        final product = Provider.of<Products>(context, listen: false).findById(productId.toString());
+        _editedProduct = product;
+        _initValues = {
+          'title': _editedProduct.title,
+          'description': _editedProduct.description,
+          'price': _editedProduct.price.toString(),
+          /// 'imageUrl': _editedProduct.imageUrl
+          /// 'imageUrl': ''
+        };
+        _imageUrlController.text = _editedProduct.imageUrl;
+      }
+    }
+    _isInit = false;
+    print(_initValues);
+    super.didChangeDependencies();
   }
 
   void _updateImageUrl() {
@@ -40,43 +72,73 @@ class _EditProductScreenState extends State<EditProductScreen> {
   @override
   void dispose() {
     _imageUrlFocusNode.removeListener(_updateImageUrl);
-
     _priceFocuseNode.dispose();
     _descriptionFocusNode.dispose();
     _imageUrlFocusNode.dispose();
     super.dispose();
   }
 
-  void _saveForm() {
+   Future<void> _saveForm() async  {
     final isValid = _form.currentState!.validate();
     if (!isValid) {
       return;
     }
     _form.currentState!.save();
-    print(_editedProduct);
-    Provider.of<Products>(context, listen: false).addProduct(_editedProduct);
-    // print(_editedProduct.title);
-    // print(_editedProduct.price);
-    // print(_editedProduct.description);
-    // print(_editedProduct.id);
-    // print(_editedProduct.imageUrl);
-    Navigator.of(context).pop();
-  }
+    setState(() {
+      _isLoading = true;
+    });
+    if (_editedProduct.id == null) {
+    await  Provider.of<Products>(context, listen: false)
+          .updateProduct(_editedProduct.id, _editedProduct);
 
+    } else {
+      try{
+ await Provider.of<Products>(context, listen: false)
+          .addProduct(_editedProduct);
+      }catch(error){
+     await showDialog(context: context, builder: (ctx){
+              return AlertDialog(title: Text("An Error is ocuring"),
+              /// content: Text(error.toString()),);
+              content: Text("Something bad happen"),
+                actions: <Widget>[
+                  FlatButton(child: Text('Okay'), onPressed: () {
+                    Navigator.of(ctx).pop();
+                  },)
+                ],);
+            });
+      }
+      /// finally{
+      ///   setState(() {
+      ///     _isLoading = false;
+      ///   });
+      ///   Navigator.of(context).pop();
+    
+    }
+          /// }
+          setState(() {
+        _isLoading = false;
+      });
+      Navigator.of(context).pop();
+
+  }
   @override
   Widget build(BuildContext context) {
+    print(_isLoading);
     return Scaffold(
       appBar: AppBar(
         title: Text('Edit Product'),
         actions: [IconButton(onPressed: _saveForm, icon: Icon(Icons.save))],
       ),
-      body: Padding(
+      body:_isLoading ? Center(
+        child: CircularProgressIndicator(),
+      ) :Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
           key: _form,
           child: ListView(
             children: [
               TextFormField(
+                initialValue: _initValues['title'],
                 decoration: InputDecoration(labelText: 'Title'),
                 textInputAction: TextInputAction.next,
                 onFieldSubmitted: (_) {
@@ -88,7 +150,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
                       price: _editedProduct.price,
                       imageUrl: _editedProduct.imageUrl,
                       id: _editedProduct.id,
-                      description: _editedProduct.description);
+                      description: _editedProduct.description,
+                      isFavorite: _editedProduct.isFavorite);
                 },
                 validator: (value) {
                   if (value!.isEmpty) {
@@ -99,6 +162,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 },
               ),
               TextFormField(
+                initialValue: _initValues['price'],
                 decoration: InputDecoration(
                     labelText: 'Price',
                     errorStyle: TextStyle(color: Colors.red),
@@ -116,7 +180,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
                       price: double.parse('$value'),
                       imageUrl: _editedProduct.imageUrl,
                       id: _editedProduct.id,
-                      description: _editedProduct.description);
+                      description: _editedProduct.description,
+                      isFavorite: _editedProduct.isFavorite);
                 },
                 validator: (value) {
                   if (value!.isEmpty) {
@@ -132,6 +197,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 },
               ),
               TextFormField(
+                initialValue: _initValues['description'],
                 decoration: InputDecoration(labelText: 'Description'),
                 maxLines: 3,
                 keyboardType: TextInputType.multiline,
@@ -142,7 +208,8 @@ class _EditProductScreenState extends State<EditProductScreen> {
                       price: _editedProduct.price,
                       imageUrl: _editedProduct.imageUrl,
                       id: _editedProduct.id,
-                      description: '$value');
+                      description: '$value',
+                      isFavorite: _editedProduct.isFavorite);
                 },
                 validator: (value) {
                   if (value!.isEmpty) {
@@ -176,6 +243,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                   Expanded(
                     child: TextFormField(
                       decoration: InputDecoration(labelText: 'Image URL'),
+                      /// initialValue: _imageUrl,
                       keyboardType: TextInputType.url,
                       textInputAction: TextInputAction.done,
                       controller: _imageUrlController,
@@ -184,12 +252,14 @@ class _EditProductScreenState extends State<EditProductScreen> {
                         _saveForm();
                       },
                       onSaved: (value) {
+
                         _editedProduct = Product_m(
                             title: _editedProduct.title,
                             price: _editedProduct.price,
-                            imageUrl: '$value',
+                            imageUrl: value ?? _editedProduct.imageUrl,
                             id: _editedProduct.id,
-                            description: _editedProduct.description);
+                            description: _editedProduct.description,
+                            isFavorite: _editedProduct.isFavorite);
                       },
                       validator: (value) {
                         var urlPattern =
@@ -219,10 +289,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
       ),
     );
   }
-}
 
-@override
-Widget build(BuildContext context) {
-  // TODO: implement build
-  throw UnimplementedError();
+  noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
