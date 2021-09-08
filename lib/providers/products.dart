@@ -63,6 +63,9 @@ class Products with ChangeNotifier {
       Map<String, dynamic> extractedData = jsonDecode(response.body);
       // final extractedData = json.decode(response.body) as Map<String, dynamic>;
       final List<Product_m> loadedProducts = [];
+      if (extractedData == null) {
+        return;
+      }
       extractedData.forEach((prodId, prodData) {
         loadedProducts.add(Product_m(
           id: prodId,
@@ -81,8 +84,7 @@ class Products with ChangeNotifier {
   }
 
   Future<void> addProduct(Product_m product) async {
-    final url = Uri.parse(
-        "https://flutter-first-27064-default-rtdb.firebaseio.com/product.json");
+    final url = Uri.parse("https://flutter-first-27064-default-rtdb.firebaseio.com/product.json");
     try {
       final response = await http.post(url,
           body: jsonEncode({
@@ -90,8 +92,7 @@ class Products with ChangeNotifier {
             'description': product.description,
             'price': product.price,
             'imageUrl': product.imageUrl,
-            'isFavorite':product.isFavorite
-
+            'isFavorite': product.isFavorite
           }));
       print(jsonDecode(response.body));
       final newProduct = Product_m(
@@ -121,15 +122,14 @@ class Products with ChangeNotifier {
   Future<void> updateProduct(String id, Product_m newProduct) async {
     final prodIndex = _item.indexWhere((prod) => prod.id == id);
     if (prodIndex >= 0) {
-      final url = Uri.parse(
-          "https://flutter-first-27064-default-rtdb.firebaseio.com/product/$id.json");
+      final url = Uri.parse("https://flutter-first-27064-default-rtdb.firebaseio.com/product/$id.json");
       await http.patch(url,
           body: json.encode({
             'title': newProduct.title,
             'description': newProduct.description,
             'imageUrl': newProduct.imageUrl,
             'price': newProduct.price,
-            'isFavorite':newProduct.isFavorite
+            'isFavorite': newProduct.isFavorite
           }));
       _item[prodIndex] = newProduct;
       notifyListeners();
@@ -139,8 +139,7 @@ class Products with ChangeNotifier {
   }
 
   Future<void> deleteProduct(String id) async {
-    final url = Uri.parse(
-        "https://flutter-first-27064-default-rtdb.firebaseio.com/product/$id.json");
+    final url = Uri.parse("https://flutter-first-27064-default-rtdb.firebaseio.com/product/$id.json");
     final existingProductIndex = _item.indexWhere((prod) => prod.id == id);
     Product_m? existingPdoduct = _item[existingProductIndex];
     _item.removeAt(existingProductIndex);
@@ -153,7 +152,7 @@ class Products with ChangeNotifier {
       throw HttpException("Didn't delete it");
     }
     existingPdoduct = null;
-    /// _item.removeWhere((prod) => prod.id == id);
 
+    /// _item.removeWhere((prod) => prod.id == id);
   }
 }
