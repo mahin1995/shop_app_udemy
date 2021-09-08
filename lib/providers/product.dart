@@ -30,8 +30,7 @@ void _setFavValue(bool newValue){
     final oldStatus = isFavorite;
     isFavorite = !isFavorite;
     notifyListeners();
-    final url = Uri.parse(
-        "https://flutter-first-27064-default-rtdb.firebaseio.com/product/$id.json");
+    final url = Uri.parse("https://flutter-first-27064-default-rtdb.firebaseio.com/product/$id.json");
     try{
     final response= await http.patch(url, body: json.encode({"isFavorite": isFavorite}));
     if(response.statusCode >=400){
