@@ -88,39 +88,37 @@ class _EditProductScreenState extends State<EditProductScreen> {
     setState(() {
       _isLoading = true;
     });
-      print(_editedProduct.id);
-    if (_editedProduct.id == null) {
-      try {
-        await Provider.of<Products>(context, listen: false).addProduct(_editedProduct);
-      } catch (error) {
-        await showDialog(
-            context: context,
-            builder: (ctx) {
-              return AlertDialog(
-                title: Text("An Error is ocuring"),
-
-                /// content: Text(error.toString()),);
-                content: Text("Something bad happen"),
-                actions: <Widget>[
-                  FlatButton(
-                    child: Text('Okay'),
-                    onPressed: () {
-                      Navigator.of(ctx).pop();
-                    },
-                  )
-                ],
-              );
-            });
-      }
-    } else {
+    print(_editedProduct.id);
+    // ignore: unnecessary_null_comparison
+    if (_editedProduct.id != null) {
       await Provider.of<Products>(context, listen: false).updateProduct(_editedProduct.id, _editedProduct);
+      setState(() {
+        _isLoading = false;
+      });
+      Navigator.of(context).pop();
+      return;
+    }
+    try {
+      await Provider.of<Products>(context, listen: false).addProduct(_editedProduct);
+    } catch (error) {
+      await showDialog(
+          context: context,
+          builder: (ctx) {
+            return AlertDialog(
+              title: Text("An Error is ocuring"),
 
-      /// finally{
-      ///   setState(() {
-      ///     _isLoading = false;
-      ///   });
-      ///   Navigator.of(context).pop();
-
+              /// content: Text(error.toString()),);
+              content: Text("Something bad happen"),
+              actions: <Widget>[
+                FlatButton(
+                  child: Text('Okay'),
+                  onPressed: () {
+                    Navigator.of(ctx).pop();
+                  },
+                )
+              ],
+            );
+          });
     }
 
     /// }
