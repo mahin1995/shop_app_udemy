@@ -26,11 +26,11 @@ void _setFavValue(bool newValue){
 }
 
 
- Future <void> toggoleFavoirteStatus()async {
+ Future<void> toggoleFavoirteStatus(String _authToken) async {
     final oldStatus = isFavorite;
     isFavorite = !isFavorite;
     notifyListeners();
-    final url = Uri.parse("https://flutter-first-27064-default-rtdb.firebaseio.com/product/$id.json");
+    final url = Uri.parse("https://flutter-first-27064-default-rtdb.firebaseio.com/product/$id.json?auth=$_authToken");
     try{
     final response= await http.patch(url, body: json.encode({"isFavorite": isFavorite}));
     if(response.statusCode >=400){

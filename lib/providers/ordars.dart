@@ -16,14 +16,18 @@ class OrderItem {
 
 class Orders with ChangeNotifier {
   List<OrderItem> _orders = [];
+  String? authToken;
   List<OrderItem> get orders {
     return [..._orders];
   }
 
+  // Orders(this.authToken);
+
   Future<void> fetchAndSetOrders() async {
-    final url = Uri.parse("https://flutter-first-27064-default-rtdb.firebaseio.com/orders.json");
+    print(authToken);
+    final url = Uri.parse("https://flutter-first-27064-default-rtdb.firebaseio.com/orders.json?auth=$authToken");
     final response = await http.get(url);
-    print(json.decode(response.body));
+    // print(json.decode(response.body));
     final List<OrderItem> loadOrders = [];
     Map<String, dynamic> extactedData = json.decode(response.body);
     if (extactedData == null) {
