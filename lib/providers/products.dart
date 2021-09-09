@@ -36,6 +36,15 @@ class Products with ChangeNotifier {
     //   imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Cast-Iron-Pan.jpg/1024px-Cast-Iron-Pan.jpg',
     // ),
   ];
+  //  var authToken;///option no1
+  String? _authToken;
+
+  set authToken(String value) {
+    _authToken = value;
+  }
+
+  // final String userId;
+  Products(this._authToken, this._item); 
 
   var _showFavoritesOnly = false;
 
@@ -57,7 +66,7 @@ class Products with ChangeNotifier {
   }
 
   Future<void> fetchAndSetProducts() async {
-    final url = Uri.parse("https://flutter-first-27064-default-rtdb.firebaseio.com/product.json");
+    final url = Uri.parse("https://flutter-first-27064-default-rtdb.firebaseio.com/product.json?auth=$_authToken");
     try {
       final response = await http.get(url);
       Map<String, dynamic> extractedData = jsonDecode(response.body);
@@ -84,7 +93,7 @@ class Products with ChangeNotifier {
   }
 
   Future<void> addProduct(Product_m product) async {
-    final url = Uri.parse("https://flutter-first-27064-default-rtdb.firebaseio.com/product.json");
+    final url = Uri.parse("https://flutter-first-27064-default-rtdb.firebaseio.com/product.json?auth=$_authToken");
     try {
       final response = await http.post(url,
           body: jsonEncode({
@@ -122,7 +131,8 @@ class Products with ChangeNotifier {
   Future<void> updateProduct(String id, Product_m newProduct) async {
     final prodIndex = _item.indexWhere((prod) => prod.id == id);
     if (prodIndex >= 0) {
-      final url = Uri.parse("https://flutter-first-27064-default-rtdb.firebaseio.com/product/$id.json");
+      final url =
+          Uri.parse("https://flutter-first-27064-default-rtdb.firebaseio.com/product/$id.json?auth=$_authToken");
       await http.patch(url,
           body: json.encode({
             'title': newProduct.title,
@@ -139,7 +149,7 @@ class Products with ChangeNotifier {
   }
 
   Future<void> deleteProduct(String id) async {
-    final url = Uri.parse("https://flutter-first-27064-default-rtdb.firebaseio.com/product/$id.json");
+    final url = Uri.parse("https://flutter-first-27064-default-rtdb.firebaseio.com/product/$id.json?auth=$_authToken");
     final existingProductIndex = _item.indexWhere((prod) => prod.id == id);
     Product_m? existingPdoduct = _item[existingProductIndex];
     _item.removeAt(existingProductIndex);

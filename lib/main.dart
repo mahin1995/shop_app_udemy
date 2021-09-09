@@ -22,10 +22,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       
-      providers: [
-        ChangeNotifierProvider(
-          create: (ctx) => Products(),
-        ),
+      providers: [ 
         ChangeNotifierProvider(
           create: (ctx) => Cart(),
         ),
@@ -35,8 +32,17 @@ class MyApp extends StatelessWidget {
           ChangeNotifierProvider(
           create: (ctx) => Auth(),
         ),
+         ChangeNotifierProxyProvider<Auth, Products>(
+            // create: (ctx) => Products(),
+            // update: (ctx, auth, priveousProduct) => priveousProduct!..authToken = auth.token)
+
+            create: (_) => Products(null, []), //error here saying 3 positional arguments expected,but 0 found.
+            update: (ctx, auth, previusProducts) =>
+                Products(auth.token, previusProducts == null ? [] : previusProducts.items),
+          )
       ],
-      child: MaterialApp(
+      child: Consumer<Auth>(
+          builder: (ctx, auth, _) => MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Flutter Demo',
         theme: ThemeData(
@@ -44,7 +50,7 @@ class MyApp extends StatelessWidget {
           accentColor: Colors.orange,
           fontFamily: "Lato",
         ),
-        home: AuthScreen(),
+        home: auth.isAuthenticated ? ProductsOverviewScreen() : AuthScreen(),
         routes: {
           ProductDetailScreen.routeName: (ctx) => ProductDetailScreen(),
           CartScreen.routeName: (ctx) => CartScreen(),
@@ -53,6 +59,7 @@ class MyApp extends StatelessWidget {
           EditProductScreen.routeName: (ctx) => EditProductScreen(),
         },
       ),
+        ) 
     );
   }
 }
