@@ -103,7 +103,7 @@ class Products with ChangeNotifier {
             'imageUrl': product.imageUrl,
             'isFavorite': product.isFavorite
           }));
-      print(jsonDecode(response.body));
+      // print(jsonDecode(response.body));
       final newProduct = Product_m(
           title: product.title,
           price: product.price,
