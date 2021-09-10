@@ -12,6 +12,10 @@ class Auth with ChangeNotifier {
   var _expiryDate;
   late String _userId;
 
+ bool get isAuthenticated {
+    return token != null;
+  }
+
   String? get token {
     // if (_expiryDate != null && _expiryDate.isAfter(DateTime.now()) && _token != null) {
     if (_expiryDate != null && _token != null) {
@@ -21,9 +25,7 @@ class Auth with ChangeNotifier {
     }
   }
 
-  bool get isAuthenticated {
-    return token != null;
-  }
+ 
 
   // String? get token {
   //   if (_expiryDate != null) {
