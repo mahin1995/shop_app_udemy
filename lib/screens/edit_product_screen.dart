@@ -55,7 +55,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
       }
     }
     _isInit = false;
-    print(_initValues);
     super.didChangeDependencies();
   }
 
@@ -88,19 +87,16 @@ class _EditProductScreenState extends State<EditProductScreen> {
     setState(() {
       _isLoading = true;
     });
-    print(_editedProduct.id);
+
+    print(" edited product id ${_editedProduct.id.runtimeType}");
     // ignore: unnecessary_null_comparison
-    if (_editedProduct.id != null) {
-      await Provider.of<Products>(context, listen: false).updateProduct(_editedProduct.id, _editedProduct);
-      setState(() {
-        _isLoading = false;
-      });
-      Navigator.of(context).pop();
-      return;
-    }
-    try {
+    if ((_editedProduct.id == null) || (_editedProduct.id == '')) {
+  try {
+      print("add product");
       await Provider.of<Products>(context, listen: false).addProduct(_editedProduct);
     } catch (error) {
+      print("add prod $error");
+
       await showDialog(
           context: context,
           builder: (ctx) {
@@ -120,8 +116,15 @@ class _EditProductScreenState extends State<EditProductScreen> {
             );
           });
     }
-
-    /// }
+ 
+    }
+  
+else{
+  print(" edited product no id ${_editedProduct.id}");
+      await Provider.of<Products>(context, listen: false).updateProduct(_editedProduct.id, _editedProduct);
+      Navigator.of(context).pop();
+  
+}
     setState(() {
       _isLoading = false;
     });
@@ -130,7 +133,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print(_isLoading);
+    
     return Scaffold(
       appBar: AppBar(
         title: Text('Edit Product'),
@@ -277,7 +280,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                               if (result == null) {
                                 return "Not vailid url";
                               }
-                              print(result);
+                          
                               if (value!.isEmpty) {
                                 return 'please enter an image url';
                               }
