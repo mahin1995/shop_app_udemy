@@ -25,6 +25,10 @@ class Auth with ChangeNotifier {
     return token != null;
   }
 
+  String get userId {
+    return userId;
+  }
+
   // String? get token {
   //   if (_expiryDate != null) {
   //     print('Getting token $_token');

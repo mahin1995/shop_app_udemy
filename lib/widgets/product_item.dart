@@ -43,7 +43,7 @@ class ProductItem extends StatelessWidget {
                     ),
                     color: Theme.of(context).accentColor,
                     onPressed: () {
-                      product.toggoleFavoirteStatus(authData.token.toString());
+                      product.toggoleFavoirteStatus(authData.token.toString(), authData.userId);
                     },
                   )),
           trailing: IconButton(
