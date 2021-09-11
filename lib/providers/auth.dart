@@ -26,7 +26,7 @@ class Auth with ChangeNotifier {
   }
 
   String get userId {
-    return userId;
+    return _userId;
   }
 
   // String? get token {
