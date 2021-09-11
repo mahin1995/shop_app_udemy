@@ -5,7 +5,7 @@ import '../models/http_exception.dart';
 import './product.dart';
 
 class Products with ChangeNotifier {
-  List<Product_m> _item = [  ];
+  List<Product_m> _item = [];
   //  var authToken;///option no1
   String? _authToken;
   String? userId;
@@ -36,9 +36,9 @@ class Products with ChangeNotifier {
     );
   }
 
-  Future<void> fetchAndSetProducts([bool filterByUser=false]) async {
+  Future<void> fetchAndSetProducts([bool filterByUser = false]) async {
     // final filterString =filterByUser? 'orderBy="creatorId"&equalTo="$userId"' :'';
-       var _params;
+    var _params;
     if (filterByUser) {
       _params = <String, String>{
         'auth': '$_authToken',
@@ -51,19 +51,20 @@ class Products with ChangeNotifier {
         'auth': '$_authToken',
       };
     }
-    var url = Uri.https('https://flutter-first-27064-default-rtdb.firebaseio.com/product.json',
-    _params
+    var url = Uri.parse(
+      'https://flutter-first-27064-default-rtdb.firebaseio.com/product.json?auth=$_authToken"',
     );
     try {
       final response = await http.get(url);
       Map<String, dynamic> extractedData = jsonDecode(response.body);
       // final extractedData = json.decode(response.body) as Map<String, dynamic>;
-  
-      url = Uri.parse("https://flutter-first-27064-default-rtdb.firebaseio.com/userfavourite/$userId.json?auth=$_authToken");
+
+      url = Uri.parse(
+          "https://flutter-first-27064-default-rtdb.firebaseio.com/userfavourite/$userId.json?auth=$_authToken");
 
       final favoriteResponse = await http.get(url);
       final favoriteData = jsonDecode(favoriteResponse.body);
-        print(favoriteData );
+      print(favoriteData);
       final List<Product_m> loadedProducts = [];
       if (extractedData == null) {
         return;
@@ -95,7 +96,7 @@ class Products with ChangeNotifier {
             'description': product.description,
             'price': product.price,
             'imageUrl': product.imageUrl,
-              "creatorId":userId
+            "creatorId": userId
           }));
       // print(jsonDecode(response.body));
       final newProduct = Product_m(
