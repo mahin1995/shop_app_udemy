@@ -8,9 +8,9 @@ import 'package:shop_app_udemy/models/http_exception.dart';
 // import 'package:flutter_complete_guide/auth/auth_utils.dart';
 
 class Auth with ChangeNotifier {
-  late String _token;
+   String? _token;
   var _expiryDate;
-  late String _userId;
+   String? _userId;
 
  bool get isAuthenticated {
     return token != null;
@@ -27,7 +27,7 @@ class Auth with ChangeNotifier {
 
  
 
-  String get userId {
+  String? get userId {
     return _userId;
   }
 
@@ -69,5 +69,13 @@ class Auth with ChangeNotifier {
 
   Future<void> lgoin(String email, String password) async {
     return _authneticate(email, password, 'signInWithPassword');
+  }
+
+
+  void logout(){
+    _token= null;
+    _expiryDate=null;
+    _userId=null;
+
   }
 }

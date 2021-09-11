@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import '../screens/product_detail_screen.dart';
 import 'package:provider/provider.dart';
+import '../providers/auth.dart';
 import '../providers/product.dart';
 import '../providers/cart.dart';
-import '../providers/auth.dart';
 
 
 class ProductItem extends StatelessWidget {
@@ -43,7 +43,7 @@ class ProductItem extends StatelessWidget {
                     ),
                     color: Theme.of(context).accentColor,
                     onPressed: () {
-                      product.toggoleFavoirteStatus(authData.token.toString(), authData.userId);
+                      product.toggoleFavoirteStatus(authData.token.toString(), authData.userId.toString());
                     },
                   )),
           trailing: IconButton(

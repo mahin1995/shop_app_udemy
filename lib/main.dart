@@ -29,14 +29,21 @@ class MyApp extends StatelessWidget {
             create: (ctx) => Auth(),
           ),
           ChangeNotifierProxyProvider<Auth, Orders>(
-              create: (ctx) => Orders(), update: (ctx, auth, priveousOrder) => priveousOrder!..authToken = auth.token),
+              create: (ctx) => Orders(null, null, []),
+              update: (ctx, auth, priveousOrder) => Orders(
+                  auth.token,
+                  auth.userId,
+                  priveousOrder == null ? [] : priveousOrder.orders)),
           ChangeNotifierProxyProvider<Auth, Products>(
             // create: (ctx) => Products(),
             // update: (ctx, auth, priveousProduct) => priveousProduct!..authToken = auth.token)
 
-            create: (_) => Products(null, [], null), //error here saying 3 positional arguments expected,but 0 found.
-            update: (ctx, auth, previusProducts) =>
-                Products(auth.token, previusProducts == null ? [] : previusProducts.items, auth.userId),
+            create: (_) => Products(null, [],
+                null), //error here saying 3 positional arguments expected,but 0 found.
+            update: (ctx, auth, previusProducts) => Products(
+                auth.token,
+                previusProducts == null ? [] : previusProducts.items,
+                auth.userId),
           )
         ],
         child: Consumer<Auth>(
@@ -48,7 +55,8 @@ class MyApp extends StatelessWidget {
               accentColor: Colors.orange,
               fontFamily: "Lato",
             ),
-            home: auth.isAuthenticated ? ProductsOverviewScreen() : AuthScreen(),
+            home:
+                auth.isAuthenticated ? ProductsOverviewScreen() : AuthScreen(),
             routes: {
               ProductDetailScreen.routeName: (ctx) => ProductDetailScreen(),
               CartScreen.routeName: (ctx) => CartScreen(),
