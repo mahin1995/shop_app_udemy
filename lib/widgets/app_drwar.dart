@@ -51,7 +51,8 @@ class AppDrwar extends StatelessWidget {
             title: Text("LOGOUT"),
             onTap: () {
               Navigator.of(context).pop();//because drware is open
-              Provider.of<Auth>(context).logout();
+              Navigator.pushReplacementNamed(context, '/');
+              Provider.of<Auth>(context,listen: false).logout();
             },
           ),
         ],
