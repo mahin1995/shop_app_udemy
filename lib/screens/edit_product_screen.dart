@@ -29,14 +29,11 @@ class _EditProductScreenState extends State<EditProductScreen> {
   @override
   void initState() {
     _imageUrlFocusNode.addListener(_updateImageUrl);
-    // TODO: implement initState
-
     super.initState();
   }
 
   @override
   void didChangeDependencies() {
-    // TODO: implement didChangeDependencies
     if (_isInit) {
       final modulroute = ModalRoute.of(context);
       final productId = modulroute != null ? modulroute.settings.arguments : '';
@@ -89,7 +86,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
     });
 
     print(" edited product id ${_editedProduct.id.runtimeType}");
-    // ignore: unnecessary_null_comparison
     if ((_editedProduct.id == null) || (_editedProduct.id == '')) {
   try {
       print("add product");
