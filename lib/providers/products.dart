@@ -5,37 +5,17 @@ import '../models/http_exception.dart';
 import './product.dart';
 
 class Products with ChangeNotifier {
-  List<Product_m> _item = [
-    // Product_m(
-    //   id: 'p1',
-    //   title: 'Red Shirt',
-    //   description: 'A red shirt - it is pretty red!',
-    //   price: 29.99,
-    //   imageUrl: 'https://cdn.pixabay.com/photo/2016/10/02/22/17/red-t-shirt-1710578_1280.jpg',
-    // ),
-    // Product_m(
-    //   id: 'p2',
-    //   title: 'Trousers',
-    //   description: 'A nice pair of trousers.',
-    //   price: 59.99,
-    //   imageUrl:
-    //       'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Trousers%2C_dress_%28AM_1960.022-8%29.jpg/512px-Trousers%2C_dress_%28AM_1960.022-8%29.jpg',
-    // ),
-    // Product_m(
-    //   id: 'p3',
-    //   title: 'Yellow Scarf',
-    //   description: 'Warm and cozy - exactly what you need for the winter.',
-    //   price: 19.99,
-    //   imageUrl: 'https://live.staticflickr.com/4043/4438260868_cc79b3369d_z.jpg',
-    // ),
-    // Product_m(
-    //   id: 'p4',
-    //   title: 'A Pan',
-    //   description: 'Prepare any meal you want.',
-    //   price: 49.99,
-    //   imageUrl: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Cast-Iron-Pan.jpg/1024px-Cast-Iron-Pan.jpg',
-    // ),
-  ];
+  List<Product_m> _item = [];
+  //  var authToken;///option no1
+  String? _authToken;
+  String? userId;
+
+  set authToken(String value) {
+    _authToken = value;
+  }
+
+  // final String userId;
+  Products(this._authToken, this._item, this.userId);
 
   var _showFavoritesOnly = false;
 
@@ -56,20 +36,46 @@ class Products with ChangeNotifier {
     );
   }
 
-  Future<void> fetchAndSetProducts() async {
-    final url = Uri.parse("https://flutter-first-27064-default-rtdb.firebaseio.com/product.json");
+  Future<void> fetchAndSetProducts([bool filterByUser = false]) async {
+    // final filterString =filterByUser? 'orderBy="creatorId"&equalTo="$userId"' :'';
+    var _params;
+    if (filterByUser) {
+      _params = <String, String>{
+        'auth': '$_authToken',
+        'orderBy': json.encode("creatorId"),
+        'equalTo': json.encode(userId),
+      };
+    }
+    if (filterByUser == false) {
+      _params = <String, String>{
+        'auth': '$_authToken',
+      };
+    }
+    var url = Uri.parse(
+      'https://flutter-first-27064-default-rtdb.firebaseio.com/product.json?auth=$_authToken"',
+    );
     try {
       final response = await http.get(url);
       Map<String, dynamic> extractedData = jsonDecode(response.body);
       // final extractedData = json.decode(response.body) as Map<String, dynamic>;
+
+      url = Uri.parse(
+          "https://flutter-first-27064-default-rtdb.firebaseio.com/userfavourite/$userId.json?auth=$_authToken");
+
+      final favoriteResponse = await http.get(url);
+      final favoriteData = jsonDecode(favoriteResponse.body);
+      print(favoriteData);
       final List<Product_m> loadedProducts = [];
+      if (extractedData == null) {
+        return;
+      }
       extractedData.forEach((prodId, prodData) {
         loadedProducts.add(Product_m(
           id: prodId,
           title: prodData['title'],
           description: prodData['description'],
           price: prodData['price'],
-          isFavorite: true,
+          isFavorite: favoriteData == null ? false : favoriteData[prodId] ?? false,
           imageUrl: prodData['imageUrl'],
         ));
       });
@@ -81,17 +87,18 @@ class Products with ChangeNotifier {
   }
 
   Future<void> addProduct(Product_m product) async {
-    final url = Uri.parse(
-        "https://flutter-first-27064-default-rtdb.firebaseio.com/product.json");
+    print("product send on api $product");
+    final url = Uri.parse("https://flutter-first-27064-default-rtdb.firebaseio.com/product.json?auth=$_authToken");
     try {
       final response = await http.post(url,
           body: jsonEncode({
             'title': product.title,
             'description': product.description,
             'price': product.price,
-            'imageUrl': product.imageUrl
+            'imageUrl': product.imageUrl,
+            "creatorId": userId
           }));
-      print(jsonDecode(response.body));
+      // print(jsonDecode(response.body));
       final newProduct = Product_m(
           title: product.title,
           price: product.price,
@@ -119,15 +126,15 @@ class Products with ChangeNotifier {
   Future<void> updateProduct(String id, Product_m newProduct) async {
     final prodIndex = _item.indexWhere((prod) => prod.id == id);
     if (prodIndex >= 0) {
-      final url = Uri.parse(
-          "https://flutter-first-27064-default-rtdb.firebaseio.com/product/$id.json");
+      final url =
+          Uri.parse("https://flutter-first-27064-default-rtdb.firebaseio.com/product/$id.json?auth=$_authToken");
       await http.patch(url,
           body: json.encode({
             'title': newProduct.title,
             'description': newProduct.description,
             'imageUrl': newProduct.imageUrl,
             'price': newProduct.price,
-            'isFavorite':newProduct.isFavorite
+            'isFavorite': newProduct.isFavorite
           }));
       _item[prodIndex] = newProduct;
       notifyListeners();
@@ -137,8 +144,7 @@ class Products with ChangeNotifier {
   }
 
   Future<void> deleteProduct(String id) async {
-    final url = Uri.parse(
-        "https://flutter-first-27064-default-rtdb.firebaseio.com/product/$id.json");
+    final url = Uri.parse("https://flutter-first-27064-default-rtdb.firebaseio.com/product/$id.json?auth=$_authToken");
     final existingProductIndex = _item.indexWhere((prod) => prod.id == id);
     Product_m? existingPdoduct = _item[existingProductIndex];
     _item.removeAt(existingProductIndex);
@@ -151,7 +157,7 @@ class Products with ChangeNotifier {
       throw HttpException("Didn't delete it");
     }
     existingPdoduct = null;
-    /// _item.removeWhere((prod) => prod.id == id);
 
+    /// _item.removeWhere((prod) => prod.id == id);
   }
 }
