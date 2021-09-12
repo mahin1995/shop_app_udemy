@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import 'package:shop_app_udemy/models/http_exception.dart';
 import 'package:shop_app_udemy/providers/auth.dart';
 
-
 enum AuthMode { Signup, Login }
 
 class AuthScreen extends StatelessWidget {
@@ -94,7 +93,8 @@ class AuthCard extends StatefulWidget {
   _AuthCardState createState() => _AuthCardState();
 }
 
-class _AuthCardState extends State<AuthCard> {
+class _AuthCardState extends State<AuthCard>
+    with SingleTickerProviderStateMixin {
   final GlobalKey<FormState> _formKey = GlobalKey();
   AuthMode _authMode = AuthMode.Login;
   Map<String, String> _authData = {
@@ -103,27 +103,56 @@ class _AuthCardState extends State<AuthCard> {
   };
   var _isLoading = false;
   final _passwordController = TextEditingController();
+  AnimationController? _controller;
+  late Animation<Size> _heightAnimation;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: Duration(
+        milliseconds: 300,
+      ),
+    );
+    _heightAnimation = Tween<Size>(
+      begin: Size(double.infinity, 270),
+      end: Size(double.infinity, 400),
+    ).animate(
+      CurvedAnimation(
+        parent: _controller as AnimationController,
+        curve: Curves.linear,
+      ),
+    );
+    _heightAnimation.addListener(()=>setState(() {}));
 
+  }
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    _controller!.dispose();
+  }
 
   void _showErrorDialog(String message) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-            title: Text('An Error Occurred!'),
-            content: Text(message),
-            actions: <Widget>[
-              FlatButton(
-                child: Text('Okay'),
-                onPressed: () {
-                  Navigator.of(ctx).pop();
-                },
-              )
-            ],
-          ),
+        title: Text('An Error Occurred!'),
+        content: Text(message),
+        actions: <Widget>[
+          FlatButton(
+            child: Text('Okay'),
+            onPressed: () {
+              Navigator.of(ctx).pop();
+            },
+          )
+        ],
+      ),
     );
   }
 
-  Future <void> _submit() async {
+  Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) {
       // Invalid!
       return;
@@ -132,18 +161,19 @@ class _AuthCardState extends State<AuthCard> {
     setState(() {
       _isLoading = true;
     });
-    try{
- if (_authMode == AuthMode.Login) {
-      // Log user in
-      await Provider.of<Auth>(context,listen: false).lgoin(_authData['email'] as String, _authData['password']as String);
-
-    } else {
-      // Sign user up
-      await Provider.of<Auth>(context,listen: false).signup(_authData['email'] as String, _authData['password']as String);
-    }
-    }on HttpException catch(error){
-      var errorMessage="authentication Failed";
-     if (error.toString().contains('EMAIL_EXISTS')) {
+    try {
+      if (_authMode == AuthMode.Login) {
+        // Log user in
+        await Provider.of<Auth>(context, listen: false).lgoin(
+            _authData['email'] as String, _authData['password'] as String);
+      } else {
+        // Sign user up
+        await Provider.of<Auth>(context, listen: false).signup(
+            _authData['email'] as String, _authData['password'] as String);
+      }
+    } on HttpException catch (error) {
+      var errorMessage = "authentication Failed";
+      if (error.toString().contains('EMAIL_EXISTS')) {
         errorMessage = 'This email address is already in use.';
       } else if (error.toString().contains('INVALID_EMAIL')) {
         errorMessage = 'This is not a valid email address';
@@ -155,13 +185,11 @@ class _AuthCardState extends State<AuthCard> {
         errorMessage = 'Invalid password.';
       }
       _showErrorDialog(errorMessage);
-    }
-    catch(error){
-      var errorMessage="Could not authenticate you! something wrong";
+    } catch (error) {
+      var errorMessage = "Could not authenticate you! something wrong";
       _showErrorDialog(errorMessage);
-
     }
-   
+
     setState(() {
       _isLoading = false;
     });
@@ -172,10 +200,12 @@ class _AuthCardState extends State<AuthCard> {
       setState(() {
         _authMode = AuthMode.Signup;
       });
+      _controller!.forward();
     } else {
       setState(() {
         _authMode = AuthMode.Login;
       });
+      _controller!.reverse();
     }
   }
 
@@ -188,9 +218,9 @@ class _AuthCardState extends State<AuthCard> {
       ),
       elevation: 8.0,
       child: Container(
-        height: _authMode == AuthMode.Signup ? 320 : 260,
-        constraints:
-            BoxConstraints(minHeight: _authMode == AuthMode.Signup ? 320 : 260),
+        // height: _authMode == AuthMode.Signup ? 320 : 260,
+        height: _heightAnimation.value.height,
+        constraints: BoxConstraints(minHeight: _heightAnimation.value.height),
         width: deviceSize.width * 0.75,
         padding: EdgeInsets.all(16.0),
         child: Form(
