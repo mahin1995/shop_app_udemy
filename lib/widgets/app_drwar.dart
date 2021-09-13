@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../helpers/custom_route.dart';
 import '../screens/user_product_screen.dart';
 import '../screens/orders_screen.dart';
 import 'package:provider/provider.dart';
@@ -25,34 +26,35 @@ class AppDrwar extends StatelessWidget {
             },
           ),
           Divider(),
-
           ListTile(
             leading: Icon(Icons.payment),
             title: Text("Orders"),
             onTap: () {
-              Navigator.of(context)
-                  .pushReplacementNamed(OrdersScreen.routeName);
+              // Navigator.of(context)
+              //     .pushReplacementNamed(OrdersScreen.routeName);
+              Navigator.of(context).pushReplacement(
+                CustomRoute(
+                  builder: (ctx) => OrdersScreen(),
+                ),
+              );
             },
           ),
           Divider(),
-
           ListTile(
             leading: Icon(Icons.edit),
             title: Text("User Product"),
             onTap: () {
-              Navigator.of(context)
-                  .pushReplacementNamed(UserProductScreen.routeName);
+              Navigator.of(context).pushReplacementNamed(UserProductScreen.routeName);
             },
           ),
           Divider(),
-
           ListTile(
             leading: Icon(Icons.logout),
             title: Text("LOGOUT"),
             onTap: () {
-              Navigator.of(context).pop();//because drware is open
+              Navigator.of(context).pop(); //because drware is open
               Navigator.pushReplacementNamed(context, '/');
-              Provider.of<Auth>(context,listen: false).logout();
+              Provider.of<Auth>(context, listen: false).logout();
             },
           ),
         ],
